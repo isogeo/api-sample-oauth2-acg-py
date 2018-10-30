@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+pylint = "*"
+"autopep8" = "*"
+
+[packages]
+requests = ">=2.18.*"
+requests-oauthlib = "*"
+isogeo-pysdk = "*"
+Flask = ">=0.12.*"
+
+[requires]
+python_version = "3.6"
