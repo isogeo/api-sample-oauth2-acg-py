@@ -30,7 +30,7 @@ Install:
     flask run
     ```
 
-3. Open your favorite browser to [http://localhost:5000](http://localhost:5000)
+3. Open your favorite browser to [http://localhost:5555](http://localhost:5555)
 
 ### With Docker
 
@@ -41,4 +41,4 @@ docker build -t isogeo-api-sample-oauth2-agf-py:latest .
 docker run --rm --name isogeo-websample -d -p 5000:5000 isogeo-oauth2-sample
 ```
 
-Then, open your favorite browser to [http://localhost:5000](http://localhost:5000)
+Then, open your favorite browser to [http://localhost:5555](http://localhost:5555)

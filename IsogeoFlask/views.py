@@ -8,6 +8,7 @@
 # Standard library
 import json
 from datetime import datetime
+import logging
 from random import randint
 
 # 3rd party library
@@ -72,10 +73,11 @@ def login():
     authorization_url, state = isogeo.authorization_url(ISOGEO_OAUTH_URL_AUTH)
     # State is used to prevent CSRF, keep this for later.
     session['oauth_state'] = state
+    print("Auth request: {}".format(authorization_url))
     return redirect(authorization_url)
 
 
-@app.route("/callback", methods=["GET"])
+@app.route("/login/oauth/callback", methods=["GET"])
 def callback():
     """ Step 3: Retrieving an access token.
 
@@ -83,7 +85,7 @@ def callback():
     callback URL. With this redirection comes an authorization code included
     in the redirect URL. We will use that to obtain an access token.
 
-    set http://localhost:5000/callback
+    set http://localhost:5000/login/oauth/callback
     """
 
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID,
