@@ -38,7 +38,7 @@ Install:
 # build the container
 docker build -t isogeo-api-sample-oauth2-agf-py:latest .
 # launch it in detached mode
-docker run --rm --name isogeo-websample -d -p 5000:5000 isogeo-oauth2-sample
+docker run --rm --name isogeo-websample -d -p 5555:5555 isogeo-oauth2-sample
 ```
 
 Then, open your favorite browser to [http://localhost:5555](http://localhost:5555)
