@@ -6,21 +6,37 @@
 """
 
 import logging
+from logging.handlers import RotatingFileHandler
 from os import environ, urandom
 from IsogeoFlask import app
 
+# LOGGING
+logger = logging.getLogger("IsogeoFlask")
+logging.captureWarnings(True)
+logger.setLevel(logging.DEBUG)
+log_form = logging.Formatter("%(asctime)s || %(levelname)s "
+                             "|| %(module)s - %(lineno)d ||"
+                             " %(funcName)s || %(message)s")
+logfile = RotatingFileHandler("log_IsogeoFlask.log", "a", 3000000, 1)
+logfile.setLevel(logging.DEBUG)
+logfile.setFormatter(log_form)
+logger.addHandler(logfile)
+logger.info('================ Isogeo Flask ===============')
+
+
 if __name__ == '__main__':
     # check running env
-    if "WEBSITE_SITE_NAME" not in environ:
+    if environ.get("WEBSITE_SITE_NAME"):
+        logger.debug("Localhost server used. Debug mode enabled and SSL disabled.")
         environ['DEBUG'] = "1"
         # ONLY IN DEBUG MODE - NO MAINTAIN THIS OPTION IN PRODUCTION #############
         environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     else:
-        logging.info(environ.get("WEBSITE_SITE_NAME"))
+        logger.info(environ.get("WEBSITE_SITE_NAME"))
 
     # set host
     if environ.get("DOCKER_CONTAINER"):
-        print("Executed from Docker container")
+        logger.info("Executed from Docker container")
         HOST = "0.0.0.0"
     else:
         HOST = environ.get('SERVER_HOST', 'localhost')

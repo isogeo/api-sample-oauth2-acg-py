@@ -24,6 +24,9 @@ from IsogeoFlask import app
 # ############################################################################
 # ########## Globals ###############
 # ##################################
+# logging
+logger = logging.getLogger("IsogeoFlask")
+
 # oAuth2 settings from client_secrets.json
 utils = utils()
 api = utils.credentials_loader("client_secrets.json")
@@ -53,6 +56,7 @@ def home():
 @app.route('/contact')
 def contact():
     """Renders the contact page."""
+    logger.debug("Route called: CONTACT")
     return render_template(
         'contact.html',
         title='Contact',
@@ -69,6 +73,7 @@ def login():
     Redirect the user/resource owner to the OAuth provider = Isogeo ID
     using an URL with a few key OAuth parameters.
     """
+    logger.debug("Route called: LOGIN")
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID)
     authorization_url, state = isogeo.authorization_url(ISOGEO_OAUTH_URL_AUTH)
     # State is used to prevent CSRF, keep this for later.
@@ -87,7 +92,7 @@ def callback():
 
     set http://localhost:5000/login/oauth/callback
     """
-
+    logger.debug("Route called: CALLBACK")
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID,
                            state=session.get('oauth_state', None))
     token = isogeo.fetch_token(ISOGEO_OAUTH_URL_TOKEN,
@@ -106,6 +111,7 @@ def menu():
     """
         # Step 4: User pick an option
     """
+    logger.debug("Route called: MENU")
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
 
@@ -122,6 +128,7 @@ def menu():
 def automatic_refresh():
     """Refreshing an OAuth 2 token using a refresh token.
     """
+    logger.debug("Route called: TOKEN AUTO REFRESH")
     token = session['oauth_token']
 
     # We force an expiration by setting expired at in the past.
@@ -152,6 +159,7 @@ def automatic_refresh():
 def manual_refresh():
     """Refreshing an OAuth 2 token using a refresh token.
     """
+    logger.debug("Route called: TOKEN MANUAL REFRESH")
     token = session['oauth_token']
 
     extra = {
