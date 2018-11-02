@@ -29,15 +29,18 @@ logger = logging.getLogger("IsogeoFlask")
 
 # oAuth2 settings from client_secrets.json
 utils = utils()
-api = utils.credentials_loader("client_secrets.json")
-
-ISOGEO_OAUTH_CLIENT_ID = api.get('client_id')
-ISOGEO_OAUTH_CLIENT_SECRET = api.get('client_secret')
-ISOGEO_OAUTH_URL_301 = api.get('uri_redirect')
-ISOGEO_OAUTH_URL_AUTH = api.get('uri_auth')
-ISOGEO_OAUTH_URL_TOKEN = api.get('uri_token')
-ISOGEO_OAUTH_URL_TOKEN_REFRESH = ISOGEO_OAUTH_URL_TOKEN
-
+try:
+    api = utils.credentials_loader("client_secrets.json")
+    ISOGEO_OAUTH_CLIENT_ID = api.get('client_id')
+    ISOGEO_OAUTH_CLIENT_SECRET = api.get('client_secret')
+    ISOGEO_OAUTH_URL_301 = api.get('uri_redirect')
+    ISOGEO_OAUTH_URL_AUTH = api.get('uri_auth')
+    ISOGEO_OAUTH_URL_TOKEN = api.get('uri_token')
+    ISOGEO_OAUTH_URL_TOKEN_REFRESH = ISOGEO_OAUTH_URL_TOKEN
+    ISOGEO_OAUTH_CREDENTIALS = 1
+except OSError as e:
+    logger.error(e)
+    ISOGEO_OAUTH_CREDENTIALS = 0
 
 # ############################################################################
 # ########## Functions #############
@@ -46,10 +49,20 @@ ISOGEO_OAUTH_URL_TOKEN_REFRESH = ISOGEO_OAUTH_URL_TOKEN
 @app.route('/home')
 def home():
     """Renders the home page."""
+    logger.debug("Route called: HOMEPAGE.")
+    # alert box according to the authentication status
+    if ISOGEO_OAUTH_CREDENTIALS:
+        auth_status = "success"
+        auth_msg = "Des paramètres d'authentification ont bien été trouvés."
+    else:
+        auth_status = "warning"
+        auth_msg = "Paramètres d'authentification manquants. L'authentification Isogeo de fonctionnera pas. Consulter l'aide du projet."
     return render_template(
         'index.html',
         title="Page d'accueil",
         year=datetime.now().year,
+        auth_status=auth_status,
+        auth_msg=auth_msg
     )
 
 

@@ -7,7 +7,9 @@
     <p class="lead">Isogeo est une plateforme SaaS dédiée à la valorisation de l'information géographique. Ce mini-site démontre l'intégration de l'authentification déportée (oAuth2) d'un utilisateur de la plateforme pour développer des usages.</p>
     <p><a href="https://www.isogeo.com" class="btn btn-primary btn-lg" role="button">En savoir plus &raquo;</a></p>
 </div>
-
+<div class="alert alert-{{ auth_status }}">
+    {{ auth_msg }}
+</div>
 <div class="row">
     <div class="col-md-4">
         <h2>Une API REST <i class="fas fa-code"></i></h2>
