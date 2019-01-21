@@ -32,7 +32,7 @@ if __name__ == '__main__':
         # ONLY IN DEBUG MODE - NO MAINTAIN THIS OPTION IN PRODUCTION #############
         environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
     else:
-        logger.info(environ.get("WEBSITE_SITE_NAME"))
+        logger.info(environ.get("WEBSITE_SITE_NAME", "No Website name defined"))
 
     # set host
     if environ.get("DOCKER_CONTAINER"):
@@ -48,4 +48,13 @@ if __name__ == '__main__':
     # app secret
     app.secret_key = urandom(24)
     # app launch
-    app.run(host=HOST, port=PORT, debug=environ.get("DEBUG"))
+    # disable SSL or https://stackoverflow.com/questions/32863588/using-https-on-a-flask-local-development
+    environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    app.run(host=HOST,
+            port=PORT,
+            debug=1,
+            ssl_context=(
+                r"certs/server.cert",
+                r"certs/server.key"
+                )
+            )

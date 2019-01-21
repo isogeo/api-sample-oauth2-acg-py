@@ -9,8 +9,16 @@ Sample project to illustrate how to authentifiy to Isogeo API with Authorization
 Install:
 
 1. Clone/download this [repository](https://github.com/isogeo/api-sample-oauth2-agf-py),
-2. Open a prompt (bash, powershell...),
-3. Paste your `client_secrets.json` file
+2. Paste your `client_secrets.json` file
+3. Open a prompt (bash, powershell...),
+4. Create autosigned SSL certififcate/key pair
+
+    ```bash
+    mkdir certs
+    openssl req -nodes -new -x509 -keyout certs/server.key -out certs/server.cert
+    ```
+
+5. Then, depending on your flavour...
 
 ### With your installed Python
 
@@ -20,7 +28,7 @@ Install:
     py -3 -m  venv env
     pip install --upgrade -r requirements.txt
     # or if you have pipenv
-    pipenv
+    pipenv install --dev
     ```
 
 2. Run it:
@@ -30,7 +38,7 @@ Install:
     flask run
     ```
 
-3. Open your favorite browser to [http://localhost:5555](http://localhost:5555)
+3. Open your favorite browser to <https://localhost:5555>.
 
 ### With Docker
 
@@ -41,4 +49,4 @@ docker build -t isogeo-api-sample-oauth2-agf-py:latest .
 docker run --rm --name isogeo-websample -d -p 5555:5555 isogeo-oauth2-sample
 ```
 
-Then, open your favorite browser to [http://localhost:5555](http://localhost:5555)
+Then, open your favorite browser to <https://localhost:5555>.

@@ -9,6 +9,7 @@
 import json
 from datetime import datetime
 import logging
+from os import environ
 from random import randint
 
 # 3rd party library
@@ -31,6 +32,7 @@ logger = logging.getLogger("IsogeoFlask")
 utils = utils()
 try:
     api = utils.credentials_loader("client_secrets.json")
+    ISOGEO_API_URL_BASE = api.get('uri_base')
     ISOGEO_OAUTH_CLIENT_ID = api.get('client_id')
     ISOGEO_OAUTH_CLIENT_SECRET = api.get('client_secret')
     ISOGEO_OAUTH_URL_301 = api.get('uri_redirect')
@@ -41,6 +43,12 @@ try:
 except OSError as e:
     logger.error(e)
     ISOGEO_OAUTH_CREDENTIALS = 0
+
+# SSL verify
+if environ.get("OAUTHLIB_INSECURE_TRANSPORT"):
+    ssl_opt = 0
+else:
+    ssl_opt = 1
 
 # ############################################################################
 # ########## Functions #############
@@ -91,7 +99,7 @@ def login():
     authorization_url, state = isogeo.authorization_url(ISOGEO_OAUTH_URL_AUTH)
     # State is used to prevent CSRF, keep this for later.
     session['oauth_state'] = state
-    print("Auth request: {}".format(authorization_url))
+    logger.debug("Auth request: {}".format(authorization_url))
     return redirect(authorization_url)
 
 
@@ -103,14 +111,15 @@ def callback():
     callback URL. With this redirection comes an authorization code included
     in the redirect URL. We will use that to obtain an access token.
 
-    set http://localhost:5000/login/oauth/callback
+    set https://localhost:5000/login/oauth/callback
     """
     logger.debug("Route called: CALLBACK")
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID,
                            state=session.get('oauth_state', None))
     token = isogeo.fetch_token(ISOGEO_OAUTH_URL_TOKEN,
                                client_secret=ISOGEO_OAUTH_CLIENT_SECRET,
-                               authorization_response=request.url)
+                               authorization_response=request.url,
+                               verify=ssl_opt)
     # At this point you can fetch protected resources but lets save
     # the token and show how this is done from a persisted token
     # in /search.
@@ -163,8 +172,11 @@ def automatic_refresh():
                            auto_refresh_url=ISOGEO_OAUTH_URL_TOKEN_REFRESH,
                            token_updater=token_updater)
 
+    # search url
+    search_url = "{}/resources/search?".format(ISOGEO_API_URL_BASE)
+
     # Trigger the automatic refresh
-    jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?') .json())
+    jsonify(isogeo.get(search_url, verify=ssl_opt) .json())
     return jsonify(session['oauth_token'])
 
 
@@ -190,6 +202,7 @@ def manual_refresh():
 def search():
     """Fetching a protected resource using an OAuth 2 token.
     """
+    logger.debug("Route called: SEARCH")
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
@@ -198,10 +211,11 @@ def search():
     payload = {"_limit": 0,
                # "_include":"conditions,contacts,coordinate-system,feature-attributes,layers",
                }
-    search_url = "https://v1.api.isogeo.com/resources/search?"
+    search_url = "{}/resources/search?".format(ISOGEO_API_URL_BASE)
     search_req = isogeo.get(search_url,
                             # headers=head,
-                            params=payload)
+                            params=payload,
+                            verify=ssl_opt)
 
     return jsonify(search_req.json())
 
@@ -211,29 +225,32 @@ def profile():
     """
         Displaying basic metrics about authenticated user
     """
+    logger.debug("Route called: PROFILE")
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    search = isogeo.get('https://v1.api.isogeo.com/resources/search?lang=FR&_limit=100').json()
+    url_search = "{}/resources/search?lang=FR&_limit=100".format(ISOGEO_API_URL_BASE)
+    req_search = isogeo.get(url_search, verify=ssl_opt).json()
 
     # some calculations
-    ct_tags = len(search.get("tags"))
-    ct_workgroups = len([i for i in search.get("tags")
+    ct_tags = len(req_search.get("tags"))
+    ct_workgroups = len([i for i in req_search.get("tags")
                          if i.startswith("owner:")])
-    ct_catalogs = len([i for i in search.get("tags")
+    ct_catalogs = len([i for i in req_search.get("tags")
                        if i.startswith("catalog:")])
     # random metadata
-    ct_rez = len(search.get("results", ["No results"]))
+    ct_rez = len(req_search.get("results", ["No results"]))
     a, b = randint(0, ct_rez), randint(0, ct_rez)
-    md1, md2 = search.get("results")[a], search.get("results")[b]
+    md1, md2 = req_search.get("results")[a], req_search.get("results")[b]
     mds = {"md1": [md1.get("title"), md1.get("abstract", "Pas de résumé")],
            "md2": [md2.get("title"), md2.get("abstract", "Pas de résumé")], }
 
     # pie chart
-    stats_types = [isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:vector-dataset').json().get("total", 0),
-                   isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:raster-dataset').json().get("total", 0),
-                   isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:service').json().get("total", 0),
-                   isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:resource').json().get("total", 0),
+    url_search_type = "{}/resources/search?_limit=0&q=type:".format(ISOGEO_API_URL_BASE)
+    stats_types = [isogeo.get("{}vector-dataset".format(url_search_type), verify=ssl_opt).json().get("total", 0),
+                   isogeo.get("{}raster-dataset".format(url_search_type), verify=ssl_opt).json().get("total", 0),
+                   isogeo.get("{}service".format(url_search_type), verify=ssl_opt).json().get("total", 0),
+                   isogeo.get("{}resource".format(url_search_type), verify=ssl_opt).json().get("total", 0),
                    ]
 
     # to display
@@ -241,7 +258,7 @@ def profile():
         'metrics.html',
         title='Métriques utilisateur',
         year=datetime.now().year,
-        ct_mds=search.get("total"),
+        ct_mds=req_search.get("total"),
         ct_wgs=ct_workgroups,
         ct_cats=ct_catalogs,
         ct_tags=ct_tags,
@@ -256,6 +273,7 @@ def wg_stats():
     """
         Displaying workgroup statistics
     """
+    logger.debug("Route called: GROUP STATS")
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID,
@@ -265,10 +283,11 @@ def wg_stats():
     payload = {"_lang": "fr",
                "gid": "32f7e95ec4e94ca3bc1afda960003882"
                }
-    wg_test_stats_url = "https://v1.api.isogeo.com/groups/32f7e95ec4e94ca3bc1afda960003882/statistics?"
+    wg_test_stats_url = "{}/groups/32f7e95ec4e94ca3bc1afda960003882/statistics?".format(ISOGEO_API_URL_BASE)
     stats_req = isogeo.get(wg_test_stats_url,
                            # headers=head,
-                           params=payload)
+                           params=payload,
+                           verify=ssl_opt)
 
     print(stats_req.url)
     return jsonify(stats_req.json())
