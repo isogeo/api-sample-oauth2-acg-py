@@ -103,5 +103,12 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#####################################
+## CUSTOM ###########################
+#####################################
+
 # Isogeo auth secrets
-client_secrets.json
+client_secrets*.json
+
+# SSL certs
+certs/
