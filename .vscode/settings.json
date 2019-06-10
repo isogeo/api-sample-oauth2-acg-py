@@ -1,3 +1,5 @@
 {
     "python.linting.enabled": true,
+    "python.pythonPath": "C:\\Users\\julien.moura\\.virtualenvs\\api-sample-oauth2-agf-py--O0cSwQL\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": true
 }
