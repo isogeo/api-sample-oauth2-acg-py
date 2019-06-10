@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <p> Admin ou éditeur dans {{ wgsCount }} groupes de travail</p>
+    <h1>Import attributes into an existing metadata</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>{{ form.workgroup.label }}</p>
+        <p>{{ form.workgroup }}
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

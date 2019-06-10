@@ -1,0 +1,4 @@
+alias,dataType,description,language,name
+ALI,test_type,Bonjour **la description**,fr,TEST_AUTO
+MOHAMED,char,Au revoir **la description**,fr,TEST_TOTO
+BOXING,int,scripting attributes,fr,TESTING ATTRIBUTES

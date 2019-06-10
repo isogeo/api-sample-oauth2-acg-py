@@ -2,8 +2,9 @@
 
 {% block content %}
 
-    <h1>Fécilitations {{ username }}, vous êtes authentifié.e !</h1>
-	
+    <h1>Import d'attributs</h1>
+	<a href="/create"><button type="button" class="btn btn-outline-info btn-lg"><i class="fas fa-pen"></i> Créer vecteur</button></a>
+	<a href="/create/form"><button type="button" class="btn btn-outline-info btn-lg"><i class="fas fa-pen"></i> Créer (formulaire)</button></a>
 	    <h2>Côté utilisateur :</h2>
 			<a href="/profile"><button type="button" class="btn btn-outline-info btn-lg"><i class="far fa-user-circle"></i> Métriques utilisateur</button></a>
 			<a href="/search"><button type="button" class="btn btn-outline-info btn-lg"><i class="fab fa-searchengin"></i> Recherche brute sur 10 résultats (JSON)</button></a>
@@ -17,14 +18,5 @@
 			<br>
 			<a href="/automatic_refresh"><button type="button" class="btn btn-outline-info btn-lg"><i class="fab fa-keycdn"></i> Token oAuth2 : rafraîchisement automatique</button></a>
 			<a href="/manual_refresh"><button type="button" class="btn btn-outline-info btn-lg"><i class="fas fa-key"></i> Token oAuth2 : rafraîchisement manuel</button></a>
-		<br><hr>
-		{% if isStaff %}
-		<h2>Côté Staff Isogeo :</h2>
-			<br>
-			<a href="/create"><button type="button" class="btn btn-outline-info btn-lg"><i class="fas fa-pen"></i> Créer vecteur</button></a>
-			<a href="/create/contact"><button type="button" class="btn btn-outline-info btn-lg"><i class="far fa-address-book"></i></i> Créer
-					contact</button></a>
-			<a href="/import/attributes"><button type="button" class="btn btn-outline-info btn-lg"><i class="far fa-list-alt"></i> Importer des attributs dans une fiche</button></a>
-		{% endif %}
 
 {% endblock %}
