@@ -15,8 +15,9 @@ wheel
 
 # web
 flask>=0.12.*
+Flask-WTF>=0.14.*
 requests>=2.20.*
 requests_oauthlib
 
 # Isogeo
-isogeo-pysdk
+isogeo-pysdk>=2.21.*

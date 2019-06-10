@@ -4,16 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+black = "==19.3b0"
+pip = "*"
 pylint = "*"
-"autopep8" = "*"
 setuptools = "*"
 wheel = "*"
 
 [packages]
-requests = ">=2.18.*"
-requests-oauthlib = "*"
-isogeo-pysdk = "*"
-Flask = ">=0.12.*"
+isogeo-pysdk = "==2.21.*"
+requests = ">=2.20.0"
+requests-oauthlib = ">=1.2.0"
+Flask = "==1.0.*"
+python-dotenv = "*"
+flask-wtf = "*"
 
 [requires]
 python_version = "3.6"
