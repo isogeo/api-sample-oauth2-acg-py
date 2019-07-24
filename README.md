@@ -11,7 +11,7 @@ Install:
 1. Clone/download this [repository](https://github.com/isogeo/api-sample-oauth2-agf-py),
 2. Paste your `client_secrets.json` file
 3. Open a prompt (bash, powershell...),
-4. Create autosigned SSL certififcate/key pair
+4. Create autosigned SSL certififcate/key pair ([for Windows users, see this page [fr]](https://github.com/isogeo/isogeo-manager/wiki/setup) )
 
     ```bash
     mkdir certs
